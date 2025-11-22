@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForestQuery Global Deforestation Report 1990-2016</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+            padding: 40px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a472a;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #2d5f3f;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a472a;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2d5f3f;
+            padding-left: 12px;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d5f3f;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+            font-size: 14px;
+        }
+
+        .intro {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 3px solid #2d5f3f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: #2d5f3f;
+            color: #fff;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #2d5f3f;
+        }
+
+        td {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tbody tr:hover {
+            background: #e9f5ec;
+        }
+
+        .table-caption {
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 8px;
+            color: #2d5f3f;
+            font-size: 14px;
+        }
+
+        .recommendations {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #2d5f3f;
+        }
+
+        .recommendations h4 {
+            color: #1a472a;
+            font-size: 15px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        .recommendations ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .recommendations li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .negative {
+            color: #c82333;
+            font-weight: 500;
+        }
+
+        .positive {
+            color: #218838;
+            font-weight: 500;
+        }
+
+        .sql-appendix {
+            margin-top: 40px;
+            page-break-before: always;
+        }
+
+        .sql-code {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-left: 4px solid #2d5f3f;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            white-space: pre;
+        }
+
+        .section-number {
+            color: #2d5f3f;
+            font-weight: 700;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+                font-size: 12px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 18px;
+                page-break-after: avoid;
+            }
+
+            h3 {
+                font-size: 14px;
+                page-break-after: avoid;
+            }
+
+            table {
+                page-break-inside: avoid;
+                font-size: 11px;
+            }
+
+            .sql-appendix {
+                page-break-before: always;
+            }
+
+            .sql-code {
+                font-size: 9px;
+                page-break-inside: avoid;
+            }
+
+            .recommendations {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Report for ForestQuery into Global Deforestation, 1990 to 2016</h1>
+
+    <div class="intro">
+        <p>ForestQuery is on a mission to combat deforestation around the world and to raise awareness about this topic and its impact on the environment. The data analysis team at ForestQuery has obtained data from the World Bank that includes forest area and total land area by country and year from 1990 to 2016, as well as a table of countries and the regions to which they belong.</p>
+        <p>The data analysis team has used SQL to bring these tables together and to query them in an effort to find areas of concern as well as areas that present an opportunity to learn from successes.</p>
+    </div>
+
+    <h2><span class="section-number">1.</span> GLOBAL SITUATION</h2>
+    <p>According to the World Bank, the total forest area of the world was <span class="highlight">41,282,694.9 sq km</span> in 1990. As of 2016, the most recent year for which data was available, that number had fallen to <span class="highlight">39,958,245.9 sq km</span>, a loss of <span class="negative">1,324,449 sq km</span>, or <span class="negative">3.21%</span>.</p>
+
+    <p>The forest area lost over this time period is slightly more than the entire land area of <strong>Peru</strong> listed for the year 2016 (which is 1,279,999.99 sq km).</p>
+
+    <h2><span class="section-number">2.</span> REGIONAL OUTLOOK</h2>
+    <p>In 2016, the percent of the total land area of the world designated as forest was <span class="highlight">31.38%</span>. The region with the highest relative forestation was <strong>Latin America & Caribbean</strong>, with <span class="positive">46.16%</span>, and the region with the lowest relative forestation was <strong>Middle East & North Africa</strong>, with <span class="negative">2.07%</span> forestation.</p>
+
+    <p>In 1990, the percent of the total land area of the world designated as forest was <span class="highlight">32.42%</span>. The region with the highest relative forestation was <strong>Latin America & Caribbean</strong>, with <span class="positive">51.03%</span>, and the region with the lowest relative forestation was <strong>Middle East & North Africa</strong>, with <span class="negative">1.78%</span> forestation.</p>
+
+    <div class="table-caption">Table 2.1: Percent Forest Area by Region, 1990 & 2016</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Region</th>
+                <th>1990 Forest Percentage</th>
+                <th>2016 Forest Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>World</strong></td>
+                <td>32.42%</td>
+                <td>31.38%</td>
+            </tr>
+            <tr>
+                <td>East Asia & Pacific</td>
+                <td>25.77%</td>
+                <td>26.36%</td>
+            </tr>
+            <tr>
+                <td>Europe & Central Asia</td>
+                <td>37.27%</td>
+                <td>38.07%</td>
+            </tr>
+            <tr>
+                <td>Latin America & Caribbean</td>
+                <td>51.03%</td>
+                <td>46.16%</td>
+            </tr>
+            <tr>
+                <td>Middle East & North Africa</td>
+                <td>1.78%</td>
+                <td>2.07%</td>
+            </tr>
+            <tr>
+                <td>North America</td>
+                <td>35.65%</td>
+                <td>36.04%</td>
+            </tr>
+            <tr>
+                <td>South Asia</td>
+                <td>16.51%</td>
+                <td>17.51%</td>
+            </tr>
+            <tr>
+                <td>Sub-Saharan Africa</td>
+                <td>32.19%</td>
+                <td>28.30%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>The only regions of the world that decreased in percent forest area from 1990 to 2016 were <strong>Latin America & Caribbean</strong> (dropped from <span class="negative">51.03% to 46.16%</span>) and <strong>Sub-Saharan Africa</strong> (<span class="negative">32.19% to 28.30%</span>). All other regions actually increased in forest area over this time period. However, the drop in forest area in the two aforementioned regions was so large, the percent forest area of the world decreased over this time period from 32.42% to 31.38%.</p>
+
+    <h2><span class="section-number">3.</span> COUNTRY-LEVEL DETAIL</h2>
+
+    <h3>A. SUCCESS STORIES</h3>
+    <p>There is one particularly bright spot in the data at the country level, <strong>China</strong>. This country actually increased in forest area from 1990 to 2016 by <span class="positive">527,229.06 sq km</span>. It would be interesting to study what has changed in this country over this time to drive this figure in the data higher. The country with the next largest increase in forest area from 1990 to 2016 was the <strong>United States</strong>, but it only saw an increase of <span class="positive">79,200 sq km</span>, much lower than the figure for China.</p>
+
+    <p>China and United States are of course very large countries in total land area, so when we look at the largest percent change in forest area from 1990 to 2016, we aren't surprised to find a much smaller country listed at the top. <strong>Iceland</strong> increased in forest area by <span class="positive">213.66%</span> from 1990 to 2016.</p>
+
+    <h3>B. LARGEST CONCERNS</h3>
+    <p>Which countries are seeing deforestation to the largest degree? We can answer this question in two ways. First, we can look at the absolute square kilometer decrease in forest area from 1990 to 2016. The following 5 countries had the largest decrease in forest area over the time period under consideration:</p>
+
+    <div class="table-caption">Table 3.1: Top 5 Amount Decrease in Forest Area by Country, 1990 & 2016</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Country</th>
+                <th>Region</th>
+                <th>Absolute Forest Area Change (sq km)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Brazil</td>
+                <td>Latin America & Caribbean</td>
+                <td class="negative">-541,510</td>
+            </tr>
+            <tr>
+                <td>Indonesia</td>
+                <td>East Asia & Pacific</td>
+                <td class="negative">-282,193.98</td>
+            </tr>
+            <tr>
+                <td>Myanmar</td>
+                <td>East Asia & Pacific</td>
+                <td class="negative">-107,234.00</td>
+            </tr>
+            <tr>
+                <td>Nigeria</td>
+                <td>Sub-Saharan Africa</td>
+                <td class="negative">-106,506.00</td>
+            </tr>
+            <tr>
+                <td>Tanzania</td>
+                <td>Sub-Saharan Africa</td>
+                <td class="negative">-102,320</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>The second way to consider which countries are of concern is to analyze the data by percent decrease.</p>
+
+    <div class="table-caption">Table 3.2: Top 5 Percent Decrease in Forest Area by Country, 1990 & 2016</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Country</th>
+                <th>Region</th>
+                <th>Pct Forest Area Change</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Togo</td>
+                <td>Sub-Saharan Africa</td>
+                <td class="negative">-75.45%</td>
+            </tr>
+            <tr>
+                <td>Nigeria</td>
+                <td>Sub-Saharan Africa</td>
+                <td class="negative">-61.80%</td>
+            </tr>
+            <tr>
+                <td>Uganda</td>
+                <td>Sub-Saharan Africa</td>
+                <td class="negative">-59.13%</td>
+            </tr>
+            <tr>
+                <td>Mauritania</td>
+                <td>Sub-Saharan Africa</td>
+                <td class="negative">-46.75%</td>
+            </tr>
+            <tr>
+                <td>Honduras</td>
+                <td>Latin America & Caribbean</td>
+                <td class="negative">-45.03%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>When we consider countries that decreased in forest area percentage the most between 1990 and 2016, we find that four of the top 5 countries on the list are in the region of <strong>Sub-Saharan Africa</strong>. The countries are <strong>Togo, Nigeria, Uganda, and Mauritania</strong>. The 5th country on the list is <strong>Honduras</strong>, which is in the <strong>Latin America & Caribbean</strong> region.</p>
+
+    <p>From the above analysis, we see that <strong>Nigeria</strong> is the only country that ranks in the top 5 both in terms of absolute square kilometer decrease in forest as well as percent decrease in forest area from 1990 to 2016. Therefore, this country has a significant opportunity ahead to stop the decline and hopefully spearhead remedial efforts.</p>
+
+    <h3>C. QUARTILES</h3>
+
+    <div class="table-caption">Table 3.3: Count of Countries Grouped by Forestation Percent Quartiles, 2016</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Quartile</th>
+                <th>Number of Countries</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0-25%</td>
+                <td>85</td>
+            </tr>
+            <tr>
+                <td>25-50%</td>
+                <td>72</td>
+            </tr>
+            <tr>
+                <td>50-75%</td>
+                <td>38</td>
+            </tr>
+            <tr>
+                <td>75-100%</td>
+                <td>9</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>The largest number of countries in 2016 were found in the <strong>0-25%</strong> quartile.</p>
+
+    <p>There were <strong>9 countries</strong> in the top quartile in 2016. These are countries with a very high percentage of their land area designated as forest. The following is a list of countries and their respective forest land, denoted as a percentage.</p>
+
+    <div class="table-caption">Table 3.4: Top Quartile Countries, 2016</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Country</th>
+                <th>Region</th>
+                <th>Pct Designated as Forest</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Suriname</td>
+                <td>Latin America & Caribbean</td>
+                <td class="positive">98.26%</td>
+            </tr>
+            <tr>
+                <td>Micronesia, Fed. Sts.</td>
+                <td>East Asia & Pacific</td>
+                <td class="positive">91.86%</td>
+            </tr>
+            <tr>
+                <td>Gabon</td>
+                <td>Sub-Saharan Africa</td>
+                <td class="positive">90.04%</td>
+            </tr>
+            <tr>
+                <td>Seychelles</td>
+                <td>Sub-Saharan Africa</td>
+                <td class="positive">88.41%</td>
+            </tr>
+            <tr>
+                <td>Palau</td>
+                <td>East Asia & Pacific</td>
+                <td class="positive">87.61%</td>
+            </tr>
+            <tr>
+                <td>American Samoa</td>
+                <td>East Asia & Pacific</td>
+                <td class="positive">87.50%</td>
+            </tr>
+            <tr>
+                <td>Guyana</td>
+                <td>Latin America & Caribbean</td>
+                <td class="positive">83.90%</td>
+            </tr>
+            <tr>
+                <td>Lao PDR</td>
+                <td>East Asia & Pacific</td>
+                <td class="positive">82.11%</td>
+            </tr>
+            <tr>
+                <td>Solomon Islands</td>
+                <td>East Asia & Pacific</td>
+                <td class="positive">77.86%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2><span class="section-number">4.</span> RECOMMENDATIONS</h2>
+
+    <div class="recommendations">
+        <p>Based on the comprehensive analysis of global deforestation data from 1990 to 2016, the following recommendations are proposed for ForestQuery's strategic initiatives:</p>
+
+        <h4>Priority Focus Areas:</h4>
+
+        <p><strong>1. Sub-Saharan Africa - Critical Intervention Needed</strong></p>
+        <ul>
+            <li>This region demands immediate attention as it shows both significant absolute loss (-3.89% regional decline) and dominates the list of countries with the highest percent forest loss (4 out of 5 top countries).</li>
+            <li>Nigeria presents the most critical case, appearing in both top 5 lists for absolute and percent decrease. A targeted intervention program for Nigeria could serve as a model for the region.</li>
+            <li>Recommend allocating 40% of resources to Sub-Saharan Africa, with specific focus on Nigeria, Togo, Uganda, and Mauritania.</li>
+        </ul>
+
+        <p><strong>2. Latin America & Caribbean - Large-Scale Impact Opportunity</strong></p>
+        <ul>
+            <li>Despite having the highest regional forestation percentage (46.16%), this region experienced the largest absolute decline (-4.87%).</li>
+            <li>Brazil alone lost 541,510 sq km, representing the single largest country-level forest loss globally.</li>
+            <li>The region's high baseline forestation suggests conservation efforts could prevent catastrophic losses. Recommend 35% resource allocation.</li>
+        </ul>
+
+        <p><strong>3. East Asia & Pacific - Mixed Results Requiring Strategic Support</strong></p>
+        <ul>
+            <li>Indonesia and Myanmar show concerning losses, but China demonstrates that dramatic positive change is possible (527,229 sq km increase).</li>
+            <li>Study and document China's success story for replication in Indonesia and Myanmar.</li>
+            <li>Recommend 15% resource allocation focused on knowledge transfer programs.</li>
+        </ul>
+
+        <h4>Success Story Analysis:</h4>
+        <ul>
+            <li>China's remarkable reforestation success (527,229 sq km increase) and Iceland's percentage growth (213.66%) should be thoroughly studied.</li>
+            <li>Develop case studies on their policies, incentives, and implementation strategies for adaptation in countries facing deforestation.</li>
+            <li>Consider establishing partnerships with these governments to mentor at-risk countries.</li>
+        </ul>
+
+        <h4>Strategic Initiatives:</h4>
+        <ul>
+            <li>Develop targeted intervention programs for the 85 countries in the 0-25% forestation quartile to prevent further degradation.</li>
+            <li>Create a "Nigeria Model" pilot program given its dual ranking in both absolute and percentage decline metrics.</li>
+            <li>Establish monitoring systems for the 9 countries in the top quartile (>75% forest) to maintain their success and prevent future losses.</li>
+            <li>With 94 countries having higher forestation than the United States (a developed nation), demonstrate that economic development and forest conservation can coexist.</li>
+        </ul>
+
+        <p><strong>Conclusion:</strong> The data clearly indicates that while 1.32 million sq km of forest was lost globally (equivalent to Peru's entire land area), targeted interventions in Sub-Saharan Africa and Latin America & Caribbean could have the most significant impact on reversing global deforestation trends.</p>
+    </div>
+
+    <div class="sql-appendix">
+        <h2><span class="section-number">5.</span> APPENDIX: SQL Queries Used</h2>
+
+        <h3>1. Create Forestation View</h3>
+        <div class="sql-code">CREATE VIEW forestation AS
+SELECT
+    f.country_code,
+    f.country_name,
+    f.year,
+    f.forest_area_sqkm,
+    l.total_area_sq_mi,
+    l.total_area_sq_mi * 2.59 AS total_area_sqkm,
+    r.region,
+    r.income_group,
+    ROUND(
+        (f.forest_area_sqkm / (l.total_area_sq_mi * 2.59) * 100)::NUMERIC,
+        2
+    ) AS percent_forest
+FROM
+    forest_area f
+INNER JOIN
+    land_area l
+    ON f.country_code = l.country_code
+    AND f.year = l.year
+INNER JOIN
+    regions r
+    ON f.country_code = r.country_code;</div>
+
+        <h3>2. Global Situation Query</h3>
+        <div class="sql-code">WITH world_comparison AS (
+    SELECT
+        f1990.forest_area_sqkm AS forest_area_1990,
+        f2016.forest_area_sqkm AS forest_area_2016,
+        f2016.forest_area_sqkm - f1990.forest_area_sqkm AS forest_area_change,
+        ROUND(
+            ((f2016.forest_area_sqkm - f1990.forest_area_sqkm) / f1990.forest_area_sqkm * 100)::NUMERIC,
+            2
+        ) AS percent_change,
+        ABS(f2016.forest_area_sqkm - f1990.forest_area_sqkm) AS area_lost
+    FROM
+        forestation f1990
+    INNER JOIN
+        forestation f2016
+        ON f1990.country_code = f2016.country_code
+    WHERE
+        f1990.country_name = 'World'
+        AND f1990.year = 1990
+        AND f2016.year = 2016
+),
+closest_country AS (
+    SELECT
+        f.country_name,
+        f.total_area_sqkm,
+        wc.area_lost,
+        ABS(f.total_area_sqkm - wc.area_lost) AS difference
+    FROM
+        forestation f,
+        world_comparison wc
+    WHERE
+        f.year = 2016
+        AND f.country_name != 'World'
+        AND f.total_area_sqkm IS NOT NULL
+    ORDER BY
+        difference ASC
+    LIMIT 1
+)
+SELECT
+    wc.forest_area_1990,
+    wc.forest_area_2016,
+    wc.forest_area_change,
+    wc.percent_change,
+    cc.country_name AS closest_country,
+    cc.total_area_sqkm AS closest_country_area
+FROM
+    world_comparison wc,
+    closest_country cc;</div>
+
+        <h3>3. Regional Outlook Query</h3>
+        <div class="sql-code">WITH regional_forest AS (
+    SELECT
+        r1990.region,
+        ROUND(
+            (SUM(r1990.forest_area_sqkm) / SUM(r1990.total_area_sqkm) * 100)::NUMERIC,
+            2
+        ) AS forest_percent_1990,
+        ROUND(
+            (SUM(r2016.forest_area_sqkm) / SUM(r2016.total_area_sqkm) * 100)::NUMERIC,
+            2
+        ) AS forest_percent_2016
+    FROM
+        forestation r1990
+    INNER JOIN
+        forestation r2016
+        ON r1990.country_code = r2016.country_code
+    WHERE
+        r1990.year = 1990
+        AND r2016.year = 2016
+        AND r1990.forest_area_sqkm IS NOT NULL
+        AND r2016.forest_area_sqkm IS NOT NULL
+        AND r1990.total_area_sqkm IS NOT NULL
+        AND r2016.total_area_sqkm IS NOT NULL
+    GROUP BY
+        r1990.region
+),
+world_forest AS (
+    SELECT
+        'World' AS region,
+        percent_forest AS forest_percent_1990,
+        NULL::NUMERIC AS forest_percent_2016
+    FROM
+        forestation
+    WHERE
+        country_name = 'World'
+        AND year = 1990
+    UNION ALL
+    SELECT
+        'World' AS region,
+        NULL::NUMERIC AS forest_percent_1990,
+        percent_forest AS forest_percent_2016
+    FROM
+        forestation
+    WHERE
+        country_name = 'World'
+        AND year = 2016
+)
+SELECT
+    COALESCE(rf.region, wf.region) AS region,
+    COALESCE(rf.forest_percent_1990, MAX(wf.forest_percent_1990)) AS forest_percent_1990,
+    COALESCE(rf.forest_percent_2016, MAX(wf.forest_percent_2016)) AS forest_percent_2016,
+    CASE
+        WHEN rf.region IS NOT NULL
+        THEN rf.forest_percent_2016 - rf.forest_percent_1990
+        ELSE MAX(wf.forest_percent_2016) - MAX(wf.forest_percent_1990)
+    END AS percent_change
+FROM
+    regional_forest rf
+FULL OUTER JOIN
+    world_forest wf
+    ON rf.region = wf.region
+GROUP BY
+    rf.region, rf.forest_percent_1990, rf.forest_percent_2016, wf.region
+ORDER BY
+    CASE WHEN COALESCE(rf.region, wf.region) = 'World' THEN 0 ELSE 1 END,
+    COALESCE(rf.region, wf.region);</div>
+
+        <h3>4. Country-Level Detail Query</h3>
+        <div class="sql-code">WITH success_absolute AS (
+    SELECT 'SUCCESS_ABSOLUTE' AS query_type, f1990.country_name, f1990.region,
+           f2016.forest_area_sqkm - f1990.forest_area_sqkm AS change_value, NULL AS quartile
+    FROM forestation f1990 INNER JOIN forestation f2016 ON f1990.country_code = f2016.country_code
+    WHERE f1990.year = 1990 AND f2016.year = 2016 AND f1990.country_name != 'World'
+          AND f1990.forest_area_sqkm IS NOT NULL AND f2016.forest_area_sqkm IS NOT NULL
+          AND f2016.forest_area_sqkm > f1990.forest_area_sqkm
+    ORDER BY change_value DESC LIMIT 2
+),
+concern_absolute AS (
+    SELECT 'CONCERN_ABSOLUTE' AS query_type, f1990.country_name, f1990.region,
+           f2016.forest_area_sqkm - f1990.forest_area_sqkm AS change_value, NULL AS quartile
+    FROM forestation f1990 INNER JOIN forestation f2016 ON f1990.country_code = f2016.country_code
+    WHERE f1990.year = 1990 AND f2016.year = 2016 AND f1990.country_name != 'World'
+          AND f1990.forest_area_sqkm IS NOT NULL AND f2016.forest_area_sqkm IS NOT NULL
+    ORDER BY change_value ASC LIMIT 5
+),
+quartile_counts AS (
+    SELECT 'QUARTILE_COUNT' AS query_type, quartile AS country_name, NULL AS region,
+           COUNT(*)::NUMERIC AS change_value, quartile
+    FROM (
+        SELECT CASE WHEN percent_forest <= 25 THEN '0-25%'
+                    WHEN percent_forest > 25 AND percent_forest <= 50 THEN '25-50%'
+                    WHEN percent_forest > 50 AND percent_forest <= 75 THEN '50-75%'
+                    ELSE '75-100%' END AS quartile
+        FROM forestation WHERE year = 2016 AND percent_forest IS NOT NULL AND country_name != 'World'
+    ) sub GROUP BY quartile
+)
+SELECT * FROM success_absolute
+UNION ALL SELECT * FROM concern_absolute
+UNION ALL SELECT * FROM quartile_counts
+ORDER BY query_type, change_value DESC;</div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+query_type,country_name,region,change_value,quartile
+CONCERN_ABSOLUTE,Tanzania,Sub-Saharan Africa,-102320,
+CONCERN_ABSOLUTE,Nigeria,Sub-Saharan Africa,-106506.00098,
+CONCERN_ABSOLUTE,Myanmar,East Asia & Pacific,-107234.00390000001,
+CONCERN_ABSOLUTE,Indonesia,East Asia & Pacific,-282193.98439999996,
+CONCERN_ABSOLUTE,Brazil,Latin America & Caribbean,-541510,
+CONCERN_PERCENT,Honduras,Latin America & Caribbean,-45.03,
+CONCERN_PERCENT,Mauritania,Sub-Saharan Africa,-46.75,
+CONCERN_PERCENT,Uganda,Sub-Saharan Africa,-59.13,
+CONCERN_PERCENT,Nigeria,Sub-Saharan Africa,-61.8,
+CONCERN_PERCENT,Togo,Sub-Saharan Africa,-75.45,
+QUARTILE_COUNT,0-25%,,85,0-25%
+QUARTILE_COUNT,25-50%,,72,25-50%
+QUARTILE_COUNT,50-75%,,38,50-75%
+QUARTILE_COUNT,75-100%,,9,75-100%
+SUCCESS_ABSOLUTE,China,East Asia & Pacific,527229.0619999999,
+SUCCESS_ABSOLUTE,United States,North America,79200,
+SUCCESS_PERCENT,Iceland,Europe & Central Asia,213.66,
+TOP_QUARTILE,Suriname,Latin America & Caribbean,98.26,75-100%
+TOP_QUARTILE,"Micronesia, Fed. Sts.",East Asia & Pacific,91.86,75-100%
+TOP_QUARTILE,Gabon,Sub-Saharan Africa,90.04,75-100%
+TOP_QUARTILE,Seychelles,Sub-Saharan Africa,88.41,75-100%
+TOP_QUARTILE,Palau,East Asia & Pacific,87.61,75-100%
+TOP_QUARTILE,American Samoa,East Asia & Pacific,87.5,75-100%
+TOP_QUARTILE,Guyana,Latin America & Caribbean,83.9,75-100%
+TOP_QUARTILE,Lao PDR,East Asia & Pacific,82.11,75-100%
+TOP_QUARTILE,Solomon Islands,East Asia & Pacific,77.86,75-100%
+US_COMPARISON,Countries above US,,94,
