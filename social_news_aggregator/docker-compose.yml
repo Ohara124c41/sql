@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: udiddit-pg
+    environment:
+      POSTGRES_USER: udiddit
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: udiddit
+    ports:
+      - "55432:5432"
+    volumes:
+      - udiddit_data:/var/lib/postgresql/data
+      # Auto-load bad schema/data on first init
+      - ./bad-db.sql:/docker-entrypoint-initdb.d/01-bad-db.sql:ro
+      # Build normalized schema
+      - ./schema.sql:/docker-entrypoint-initdb.d/02-schema.sql:ro
+      # Run migration into new schema
+      - ./migration.sql:/docker-entrypoint-initdb.d/03-migration.sql:ro
+
+volumes:
+  udiddit_data:

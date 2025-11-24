@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Udiddit: A Social News Aggregator - Database Schema Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #202124;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .document {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 72px 72px 72px 72px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            min-height: 11in;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: #202124;
+            border-bottom: none;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 400;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            color: #202124;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 24px;
+            margin-bottom: 10px;
+            color: #202124;
+        }
+
+        p {
+            margin-bottom: 12px;
+            font-size: 11pt;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #5f6368;
+            margin-bottom: 24px;
+        }
+
+        .code-block {
+            background-color: #000000;
+            color: #d4d4d4;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 10pt;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .keyword {
+            color: #0000ff;
+            font-weight: 600;
+        }
+
+        .datatype {
+            color: #008080;
+            font-weight: 500;
+        }
+
+        .string {
+            color: #a31515;
+        }
+
+        .number {
+            color: #098658;
+        }
+
+        .comment {
+            color: #008000;
+            font-style: italic;
+        }
+
+        .function {
+            color: #795e26;
+        }
+
+        ul {
+            margin-left: 24px;
+            margin-bottom: 12px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 11pt;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .issue-block {
+            background-color: #fff4e5;
+            border-left: 4px solid #f9ab00;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .issue-title {
+            font-weight: 600;
+            color: #e37400;
+            margin-bottom: 4px;
+        }
+
+        .fix-text {
+            color: #137333;
+            font-weight: 500;
+        }
+
+        .guideline-box {
+            background-color: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .note {
+            background-color: #fce8e6;
+            border-left: 4px solid #d93025;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 0 4px 4px 0;
+            font-weight: 500;
+        }
+
+        .tip {
+            background-color: #e6f4ea;
+            border-left: 4px solid #137333;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+        <h1>Udiddit, a Social News Aggregator</h1>
+
+        <h2>Introduction</h2>
+        <p>Udiddit, a social news aggregation, web content rating, and discussion website, is currently using a risky and unreliable Postgres database schema to store the forum posts, discussions, and votes made by their users about different topics.</p>
+
+        <p>The schema allows posts to be created by registered users on certain topics, and can include a URL or a text content. It also allows registered users to cast an upvote (like) or downvote (dislike) for any forum post that has been created. In addition to this, the schema also allows registered users to add comments on posts.</p>
+
+        <p>Here is the DDL used to create the schema:</p>
+
+        <div class="code-block"><span class="keyword">CREATE TABLE</span> bad_posts (
+    id <span class="datatype">SERIAL</span> <span class="keyword">PRIMARY KEY</span>,
+    topic <span class="datatype">VARCHAR</span>(<span class="number">50</span>),
+    username <span class="datatype">VARCHAR</span>(<span class="number">50</span>),
+    title <span class="datatype">VARCHAR</span>(<span class="number">150</span>),
+    url <span class="datatype">VARCHAR</span>(<span class="number">4000</span>) <span class="keyword">DEFAULT NULL</span>,
+    text_content <span class="datatype">TEXT</span> <span class="keyword">DEFAULT NULL</span>,
+    upvotes <span class="datatype">TEXT</span>,
+    downvotes <span class="datatype">TEXT</span>
+);
+
+<span class="keyword">CREATE TABLE</span> bad_comments (
+    id <span class="datatype">SERIAL</span> <span class="keyword">PRIMARY KEY</span>,
+    username <span class="datatype">VARCHAR</span>(<span class="number">50</span>),
+    post_id <span class="datatype">BIGINT</span>,
+    text_content <span class="datatype">TEXT</span>
+);</div>
+
+        <h2>Part I: Investigate the Existing Schema</h2>
+        <p>As a first step, investigate this schema and some of the sample data in the project's SQL workspace. Then, in your own words, outline three (3) specific things that could be improved about this schema. Don't hesitate to outline more if you want to stand out!</p>
+
+        <div class="issue-block">
+            <div class="issue-title">Issue: User/topic names stored as free text</div>
+            <div class="fix-text">Fix:</div> add users/topics tables with UNIQUE + length limits and FKs.
+        </div>
+
+        <div class="issue-block">
+            <div class="issue-title">Issue: Votes stored as comma-separated text</div>
+            <div class="fix-text">Fix:</div> add votes table with CHECK (value IN (-1,1)), UNIQUE (user_id, post_id), ON DELETE CASCADE on post.
+        </div>
+
+        <div class="issue-block">
+            <div class="issue-title">Issue: Comments lack FKs and threading</div>
+            <div class="fix-text">Fix:</div> add comments with FK to posts (cascade), self-FK parent_comment_id (cascade).
+        </div>
+
+        <div class="issue-block">
+            <div class="issue-title">Issue: No content constraints</div>
+            <div class="fix-text">Fix:</div> enforce title ≤100 chars, username ≤25, topic ≤30, non-empty text, and body exclusivity (url IS NOT NULL) &lt;&gt; (text_content IS NOT NULL).
+        </div>
+
+        <div class="issue-block">
+            <div class="issue-title">Issue: Missing indexes</div>
+            <div class="fix-text">Fix:</div> add indexes for topic/user recent posts, URL lookup, post/comment retrieval, and vote scoring.
+        </div>
+
+        <h2>Part II: Create the DDL for Your New Schema</h2>
+        <p>Having done this initial investigation and assessment, your next goal is to dive deep into the heart of the problem and create a new schema for Udiddit. Your new schema should at least reflect fixes to the shortcomings you pointed to in the previous exercise. To help you create the new schema, a few guidelines are provided to you:</p>
+
+        <div class="guideline-box">
+            <h3>Guideline #1: Features and Specifications</h3>
+            <p>Here is a list of features and specifications that Udiddit needs in order to support its website and administrative interface:</p>
+            <ul>
+                <li><strong>Allow new users to register:</strong>
+                    <ul>
+                        <li>Each username has to be unique</li>
+                        <li>Usernames can be composed of at most 25 characters</li>
+                        <li>Usernames can't be empty</li>
+                        <li>We won't worry about user passwords for this project</li>
+                    </ul>
+                </li>
+                <li><strong>Allow registered users to create new topics:</strong>
+                    <ul>
+                        <li>Topic names have to be unique</li>
+                        <li>The topic's name is at most 30 characters</li>
+                        <li>The topic's name can't be empty</li>
+                        <li>Topics can have an optional description of at most 500 characters</li>
+                    </ul>
+                </li>
+                <li><strong>Allow registered users to create new posts on existing topics:</strong>
+                    <ul>
+                        <li>Posts have a required title of at most 100 characters</li>
+                        <li>The title of a post can't be empty</li>
+                        <li>Posts should contain either a URL or a text content, but not both</li>
+                        <li>If a topic gets deleted, all the posts associated with it should be automatically deleted too</li>
+                        <li>If the user who created the post gets deleted, then the post will remain, but it will become dissociated from that user</li>
+                    </ul>
+                </li>
+                <li><strong>Allow registered users to comment on existing posts:</strong>
+                    <ul>
+                        <li>A comment's text content can't be empty</li>
+                        <li>Contrary to the current linear comments, the new structure should allow comment threads at arbitrary levels</li>
+                        <li>If a post gets deleted, all comments associated with it should be automatically deleted too</li>
+                        <li>If the user who created the comment gets deleted, then the comment will remain, but it will become dissociated from that user</li>
+                        <li>If a comment gets deleted, then all its descendants in the thread structure should be automatically deleted too</li>
+                    </ul>
+                </li>
+                <li><strong>Make sure that a given user can only vote once on a given post:</strong>
+                    <ul>
+                        <li>Hint: you can store the (up/down) value of the vote as the values 1 and -1 respectively</li>
+                        <li>If the user who cast a vote gets deleted, then all their votes will remain, but will become dissociated from the user</li>
+                        <li>If a post gets deleted, then all the votes for that post should be automatically deleted too</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="guideline-box">
+            <h3>Guideline #2: Required Queries</h3>
+            <p>Here is a list of queries that Udiddit needs in order to support its website and administrative interface. Note that you don't need to produce the DQL for those queries: they are only provided to guide the design of your new database schema.</p>
+            <ul>
+                <li>List all users who haven't logged in in the last year</li>
+                <li>List all users who haven't created any post</li>
+                <li>Find a user by their username</li>
+                <li>List all topics that don't have any posts</li>
+                <li>Find a topic by its name</li>
+                <li>List the latest 20 posts for a given topic</li>
+                <li>List the latest 20 posts made by a given user</li>
+                <li>Find all posts that link to a specific URL, for moderation purposes</li>
+                <li>List all the top-level comments (those that don't have a parent comment) for a given post</li>
+                <li>List all the direct children of a parent comment</li>
+                <li>List the latest 20 comments made by a given user</li>
+                <li>Compute the score of a post, defined as the difference between the number of upvotes and the number of downvotes</li>
+            </ul>
+        </div>
+
+        <div class="guideline-box">
+            <h3>Guideline #3: Technical Requirements</h3>
+            <p>You'll need to use normalization, various constraints, as well as indexes in your new database schema. You should use named constraints and indexes to make your schema cleaner.</p>
+        </div>
+
+        <div class="guideline-box">
+            <h3>Guideline #4: Database Structure</h3>
+            <p>Your new database schema will be composed of five (5) tables that should have an auto-incrementing id as their primary key.</p>
+        </div>
+
+        <p>Once you've taken the time to think about your new schema, write the DDL for it in the space provided here:</p>
+
+        <div class="code-block"><span class="comment">-- 1) Users</span>
+<span class="keyword">CREATE TABLE</span> users (
+    id <span class="datatype">SERIAL</span> <span class="keyword">PRIMARY KEY</span>,
+    username <span class="datatype">VARCHAR</span>(<span class="number">25</span>) <span class="keyword">NOT NULL</span>,
+    last_login_at <span class="datatype">TIMESTAMPTZ</span> <span class="keyword">DEFAULT</span> <span class="function">NOW</span>(),
+    created_at <span class="datatype">TIMESTAMPTZ</span> <span class="keyword">NOT NULL DEFAULT</span> <span class="function">NOW</span>(),
+    <span class="keyword">CONSTRAINT</span> uq_users_username <span class="keyword">UNIQUE</span> (username)
+);
+
+<span class="comment">-- 2) Topics</span>
+<span class="keyword">CREATE TABLE</span> topics (
+    id <span class="datatype">SERIAL</span> <span class="keyword">PRIMARY KEY</span>,
+    name <span class="datatype">VARCHAR</span>(<span class="number">30</span>) <span class="keyword">NOT NULL</span>,
+    description <span class="datatype">VARCHAR</span>(<span class="number">500</span>),
+    created_by <span class="datatype">INTEGER</span> <span class="keyword">REFERENCES</span> users(id) <span class="keyword">ON DELETE SET NULL</span>,
+    created_at <span class="datatype">TIMESTAMPTZ</span> <span class="keyword">NOT NULL DEFAULT</span> <span class="function">NOW</span>(),
+    <span class="keyword">CONSTRAINT</span> uq_topics_name <span class="keyword">UNIQUE</span> (name)
+);
+
+<span class="comment">-- 3) Posts</span>
+<span class="keyword">CREATE TABLE</span> posts (
+    id <span class="datatype">SERIAL</span> <span class="keyword">PRIMARY KEY</span>,
+    topic_id <span class="datatype">INTEGER</span> <span class="keyword">NOT NULL</span>,
+    user_id <span class="datatype">INTEGER</span>,
+    title <span class="datatype">VARCHAR</span>(<span class="number">100</span>) <span class="keyword">NOT NULL</span>,
+    url <span class="datatype">TEXT</span>,
+    text_content <span class="datatype">TEXT</span>,
+    created_at <span class="datatype">TIMESTAMPTZ</span> <span class="keyword">NOT NULL DEFAULT</span> <span class="function">NOW</span>(),
+    <span class="keyword">CONSTRAINT</span> fk_posts_topic <span class="keyword">FOREIGN KEY</span> (topic_id) <span class="keyword">REFERENCES</span> topics(id) <span class="keyword">ON DELETE CASCADE</span>,
+    <span class="keyword">CONSTRAINT</span> fk_posts_user <span class="keyword">FOREIGN KEY</span> (user_id) <span class="keyword">REFERENCES</span> users(id) <span class="keyword">ON DELETE SET NULL</span>,
+    <span class="keyword">CONSTRAINT</span> ck_posts_body_exclusive <span class="keyword">CHECK</span> (
+        (url <span class="keyword">IS NOT NULL AND</span> text_content <span class="keyword">IS NULL</span>)
+        <span class="keyword">OR</span> (url <span class="keyword">IS NULL AND</span> text_content <span class="keyword">IS NOT NULL</span>)
+    )
+);
+<span class="keyword">CREATE INDEX</span> idx_posts_topic_created_at <span class="keyword">ON</span> posts (topic_id, created_at <span class="keyword">DESC</span>);
+<span class="keyword">CREATE INDEX</span> idx_posts_user_created_at <span class="keyword">ON</span> posts (user_id, created_at <span class="keyword">DESC</span>);
+<span class="keyword">CREATE INDEX</span> idx_posts_url <span class="keyword">ON</span> posts (url);
+
+<span class="comment">-- 4) Comments</span>
+<span class="keyword">CREATE TABLE</span> comments (
+    id <span class="datatype">SERIAL</span> <span class="keyword">PRIMARY KEY</span>,
+    post_id <span class="datatype">INTEGER</span> <span class="keyword">NOT NULL</span>,
+    user_id <span class="datatype">INTEGER</span>,
+    parent_comment_id <span class="datatype">INTEGER</span>,
+    text_content <span class="datatype">TEXT</span> <span class="keyword">NOT NULL</span>,
+    created_at <span class="datatype">TIMESTAMPTZ</span> <span class="keyword">NOT NULL DEFAULT</span> <span class="function">NOW</span>(),
+    <span class="keyword">CONSTRAINT</span> fk_comments_post <span class="keyword">FOREIGN KEY</span> (post_id) <span class="keyword">REFERENCES</span> posts(id) <span class="keyword">ON DELETE CASCADE</span>,
+    <span class="keyword">CONSTRAINT</span> fk_comments_user <span class="keyword">FOREIGN KEY</span> (user_id) <span class="keyword">REFERENCES</span> users(id) <span class="keyword">ON DELETE SET NULL</span>,
+    <span class="keyword">CONSTRAINT</span> fk_comments_parent <span class="keyword">FOREIGN KEY</span> (parent_comment_id) <span class="keyword">REFERENCES</span> comments(id) <span class="keyword">ON DELETE CASCADE</span>
+);
+<span class="keyword">CREATE INDEX</span> idx_comments_post_parent <span class="keyword">ON</span> comments (post_id, parent_comment_id);
+<span class="keyword">CREATE INDEX</span> idx_comments_user_created_at <span class="keyword">ON</span> comments (user_id, created_at <span class="keyword">DESC</span>);
+
+<span class="comment">-- 5) Votes</span>
+<span class="keyword">CREATE TABLE</span> votes (
+    id <span class="datatype">SERIAL</span> <span class="keyword">PRIMARY KEY</span>,
+    post_id <span class="datatype">INTEGER</span> <span class="keyword">NOT NULL</span>,
+    user_id <span class="datatype">INTEGER</span>,
+    value <span class="datatype">SMALLINT</span> <span class="keyword">NOT NULL</span>,
+    created_at <span class="datatype">TIMESTAMPTZ</span> <span class="keyword">NOT NULL DEFAULT</span> <span class="function">NOW</span>(),
+    <span class="keyword">CONSTRAINT</span> ck_votes_value <span class="keyword">CHECK</span> (value <span class="keyword">IN</span> (<span class="number">-1</span>, <span class="number">1</span>)),
+    <span class="keyword">CONSTRAINT</span> fk_votes_post <span class="keyword">FOREIGN KEY</span> (post_id) <span class="keyword">REFERENCES</span> posts(id) <span class="keyword">ON DELETE CASCADE</span>,
+    <span class="keyword">CONSTRAINT</span> fk_votes_user <span class="keyword">FOREIGN KEY</span> (user_id) <span class="keyword">REFERENCES</span> users(id) <span class="keyword">ON DELETE SET NULL</span>,
+    <span class="keyword">CONSTRAINT</span> uq_votes_user_post <span class="keyword">UNIQUE</span> (user_id, post_id)
+);
+<span class="keyword">CREATE INDEX</span> idx_votes_post <span class="keyword">ON</span> votes (post_id);
+<span class="keyword">CREATE INDEX</span> idx_votes_user <span class="keyword">ON</span> votes (user_id);</div>
+
+        <h2>Part III: Migrate the Provided Data</h2>
+        <p>Now that your new schema is created, it's time to migrate the data from the provided schema in the project's SQL Workspace to your own schema. This will allow you to review some DML and DQL concepts, as you'll be using INSERT...SELECT queries to do so. Here are a few guidelines to help you in this process:</p>
+
+        <ul>
+            <li>Topic descriptions can all be empty</li>
+            <li>Since the bad_comments table doesn't have the threading feature, you can migrate all comments as top-level comments, i.e. without a parent</li>
+            <li>You can use the Postgres string function <code>regexp_split_to_table</code> to unwind the comma-separated votes values into separate rows</li>
+            <li>Don't forget that some users only vote or comment, and haven't created any posts. You'll have to create those users too</li>
+            <li>The order of your migrations matter! For example, since posts depend on users and topics, you'll have to migrate the latter first</li>
+        </ul>
+
+        <div class="tip">
+            <strong>Tip:</strong> You can start by running only SELECTs to fine-tune your queries, and use a LIMIT to avoid large data sets. Once you know you have the correct query, you can then run your full INSERT...SELECT query.
+        </div>
+
+        <div class="note">
+            <strong>NOTE:</strong> The data in your SQL Workspace contains thousands of posts and comments. The DML queries may take at least 10-15 seconds to run.
+        </div>
+
+        <p>Write the DML to migrate the current data in bad_posts and bad_comments to your new database schema:</p>
+
+        <div class="code-block"><span class="keyword">TRUNCATE</span> votes, comments, posts, topics, users <span class="keyword">RESTART IDENTITY</span>;
+
+<span class="comment">-- 1) Users from posts, comments, vote lists</span>
+<span class="keyword">WITH</span> all_usernames <span class="keyword">AS</span> (
+    <span class="keyword">SELECT</span> username <span class="keyword">FROM</span> bad_posts
+    <span class="keyword">UNION</span>
+    <span class="keyword">SELECT</span> username <span class="keyword">FROM</span> bad_comments
+    <span class="keyword">UNION</span>
+    <span class="keyword">SELECT</span> <span class="function">btrim</span>(<span class="function">regexp_split_to_table</span>(upvotes, <span class="string">','</span>)) <span class="keyword">FROM</span> bad_posts <span class="keyword">WHERE</span> upvotes <span class="keyword">IS NOT NULL</span>
+    <span class="keyword">UNION</span>
+    <span class="keyword">SELECT</span> <span class="function">btrim</span>(<span class="function">regexp_split_to_table</span>(downvotes, <span class="string">','</span>)) <span class="keyword">FROM</span> bad_posts <span class="keyword">WHERE</span> downvotes <span class="keyword">IS NOT NULL</span>
+)
+<span class="keyword">INSERT INTO</span> users (username, last_login_at)
+<span class="keyword">SELECT DISTINCT</span> username, <span class="function">NOW</span>()
+<span class="keyword">FROM</span> all_usernames
+<span class="keyword">WHERE</span> username <span class="keyword">IS NOT NULL AND</span> <span class="function">btrim</span>(username) &lt;&gt; <span class="string">''</span>;
+
+<span class="comment">-- 2) Topics</span>
+<span class="keyword">INSERT INTO</span> topics (name, description)
+<span class="keyword">SELECT DISTINCT</span> topic <span class="keyword">AS</span> name, <span class="string">''</span> <span class="keyword">AS</span> description
+<span class="keyword">FROM</span> bad_posts
+<span class="keyword">WHERE</span> topic <span class="keyword">IS NOT NULL AND</span> <span class="function">btrim</span>(topic) &lt;&gt; <span class="string">''</span>;
+
+<span class="comment">-- 3) Posts (reuse IDs; enforce length/exclusivity)</span>
+<span class="keyword">INSERT INTO</span> posts (id, topic_id, user_id, title, url, text_content, created_at)
+<span class="keyword">SELECT</span>
+    bp.id,
+    t.id <span class="keyword">AS</span> topic_id,
+    u.id <span class="keyword">AS</span> user_id,
+    <span class="function">LEFT</span>(<span class="function">COALESCE</span>(<span class="function">NULLIF</span>(bp.title, <span class="string">''</span>), <span class="string">'(untitled)'</span>), <span class="number">100</span>) <span class="keyword">AS</span> title,
+    <span class="keyword">CASE WHEN</span> bp.url <span class="keyword">IS NOT NULL AND</span> <span class="function">btrim</span>(bp.url) &lt;&gt; <span class="string">''</span> <span class="keyword">THEN</span> bp.url <span class="keyword">END AS</span> url,
+    <span class="keyword">CASE
+        WHEN</span> bp.url <span class="keyword">IS NOT NULL AND</span> <span class="function">btrim</span>(bp.url) &lt;&gt; <span class="string">''</span> <span class="keyword">THEN NULL
+        ELSE</span> <span class="function">COALESCE</span>(<span class="function">NULLIF</span>(bp.text_content, <span class="string">''</span>), <span class="string">'No content provided'</span>)
+    <span class="keyword">END AS</span> text_content,
+    <span class="function">NOW</span>()
+<span class="keyword">FROM</span> bad_posts bp
+<span class="keyword">JOIN</span> topics t <span class="keyword">ON</span> t.name = bp.topic
+<span class="keyword">JOIN</span> users u <span class="keyword">ON</span> u.username = bp.username;
+<span class="keyword">SELECT</span> <span class="function">setval</span>(<span class="string">'posts_id_seq'</span>, (<span class="keyword">SELECT</span> <span class="function">MAX</span>(id) <span class="keyword">FROM</span> posts));
+
+<span class="comment">-- 4) Comments (all top-level)</span>
+<span class="keyword">INSERT INTO</span> comments (id, post_id, user_id, parent_comment_id, text_content, created_at)
+<span class="keyword">SELECT</span>
+    bc.id,
+    p.id <span class="keyword">AS</span> post_id,
+    u.id <span class="keyword">AS</span> user_id,
+    <span class="keyword">NULL AS</span> parent_comment_id,
+    bc.text_content,
+    <span class="function">NOW</span>()
+<span class="keyword">FROM</span> bad_comments bc
+<span class="keyword">JOIN</span> posts p <span class="keyword">ON</span> p.id = bc.post_id
+<span class="keyword">JOIN</span> users u <span class="keyword">ON</span> u.username = bc.username;
+<span class="keyword">SELECT</span> <span class="function">setval</span>(<span class="string">'comments_id_seq'</span>, (<span class="keyword">SELECT</span> <span class="function">MAX</span>(id) <span class="keyword">FROM</span> comments));
+
+<span class="comment">-- 5) Votes (unwind and dedupe)</span>
+<span class="keyword">WITH</span> raw_votes <span class="keyword">AS</span> (
+    <span class="keyword">SELECT</span> bp.id <span class="keyword">AS</span> post_id, <span class="function">btrim</span>(<span class="function">regexp_split_to_table</span>(bp.upvotes, <span class="string">','</span>)) <span class="keyword">AS</span> username, <span class="number">1</span> <span class="keyword">AS</span> value
+    <span class="keyword">FROM</span> bad_posts bp
+    <span class="keyword">WHERE</span> bp.upvotes <span class="keyword">IS NOT NULL</span>
+    <span class="keyword">UNION ALL</span>
+    <span class="keyword">SELECT</span> bp.id <span class="keyword">AS</span> post_id, <span class="function">btrim</span>(<span class="function">regexp_split_to_table</span>(bp.downvotes, <span class="string">','</span>)) <span class="keyword">AS</span> username, <span class="number">-1</span> <span class="keyword">AS</span> value
+    <span class="keyword">FROM</span> bad_posts bp
+    <span class="keyword">WHERE</span> bp.downvotes <span class="keyword">IS NOT NULL</span>
+),
+deduped <span class="keyword">AS</span> (
+    <span class="keyword">SELECT DISTINCT</span> post_id, username, value
+    <span class="keyword">FROM</span> raw_votes
+    <span class="keyword">WHERE</span> username <span class="keyword">IS NOT NULL AND</span> username &lt;&gt; <span class="string">''</span>
+)
+<span class="keyword">INSERT INTO</span> votes (post_id, user_id, value, created_at)
+<span class="keyword">SELECT</span>
+    d.post_id,
+    u.id <span class="keyword">AS</span> user_id,
+    d.value,
+    <span class="function">NOW</span>()
+<span class="keyword">FROM</span> deduped d
+<span class="keyword">JOIN</span> users u <span class="keyword">ON</span> u.username = d.username
+<span class="keyword">JOIN</span> posts p <span class="keyword">ON</span> p.id = d.post_id;
+<span class="keyword">SELECT</span> <span class="function">setval</span>(<span class="string">'votes_id_seq'</span>, (<span class="keyword">SELECT</span> <span class="function">MAX</span>(id) <span class="keyword">FROM</span> votes));</div>
+
+    </div>
+</body>
+</html>
